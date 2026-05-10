@@ -1,3 +1,5 @@
+import time
+
 import requests
 import selectorlib
 import smtplib, ssl
@@ -43,8 +45,12 @@ def send_email(message):
 
 
 def store(extracted):
-    with open("data.txt", "a") as file:
-        file.write(extracted + "\n")
+    row = extracted.split(",")
+    row = [item.strip() for item in row]
+
+    cursor = connection.cursor()
+    cursor.execute("INSERT INTO events VALUES(?,?,?)", row)
+    connection.commit()
 
 
 def read(extracted):
@@ -63,13 +69,16 @@ def read(extracted):
 
 
 if __name__ == "__main__":
-    scrapped = scrape(URL)
-    extracted = extract(scrapped)
+    while True:
+        scrapped = scrape(URL)
+        extracted = extract(scrapped)
 
-    print(extracted)
+        print(extracted)
 
-    if extracted != "No upcoming tours":
-        row = read(extracted)
-        if not row:
-            store(extracted)
-            send_email(message="Hey, new event was found")
+        if extracted != "No upcoming tours":
+            row = read(extracted)
+            if not row:
+                store(extracted)
+                # send_email(message="Hey, new event was found")
+
+        time.sleep(2)
