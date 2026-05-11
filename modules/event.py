@@ -17,8 +17,13 @@ class Event:
     def scrape(self, url: str = URL) -> str:
         """Scrape the page source from the URL"""
 
-        response = requests.get(url, headers=HEADERS)
-        return response.text
+        try:
+            response = requests.get(url, headers=HEADERS)
+            response.raise_for_status()
+            return response.text
+        except requests.exceptions.RequestException as e:
+            print(f"There was an error accessing the site {e}")
+            return ""
 
     def extract(self, source: str) -> str:
         """Extract the specific tour data from the page source using the YAML rules"""
