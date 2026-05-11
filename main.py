@@ -14,20 +14,6 @@ HEADERS = {
 }
 
 
-class Event:
-    def scrape(self, url):
-        """Scrape the page source from the URL"""
-
-        response = requests.get(url, headers=HEADERS)
-        source = response.text
-        return source
-
-    def extract(self, source):
-        extractor = selectorlib.Extractor.from_yaml_file("extract.yaml")
-        value = extractor.extract(source)["tours"]
-        return value
-
-
 class Email:
     def send(self, message):
         host = "smtp.gmail.com"
